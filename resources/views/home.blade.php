@@ -159,6 +159,11 @@
                         <form action="{{ route('question.store') }}" method="POST">
                             @csrf
 
+                            @if (session('info'))
+                                <div class="alert alert-info">
+                                        {!! session('info') !!}
+                                </div>
+                            @endif
                         <form action="" method="POST">
                             <div class="mb-3">
                                 <label for="nama" class="form-label">Nama</label>
