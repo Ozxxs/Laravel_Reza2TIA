@@ -26,18 +26,29 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
+        $data = [
+            'nama'       => $request->nama,
+            'email'      => $request->email,
+            'pertanyaan' => $request->pertanyaan,
+        ];
 
-        //dd($request->all());
+        session()->put('data_pertanyaan', $data);
+        session()->flash('info', 'Data Berhasil Dimasukkan !');
 
-        $data['nama']     =$request->nama;
-        $data['email']     =$request->email;
-        $data['pertanyaan'] =$request->pertanyaan;
-
-       //return redirect()->route('home')->with('info', 'Data berhasil dimasukkan');
-
-       return redirect('home')->with('info', 'Data berhasil ditemukan');
+        return redirect('/home');
     }
 
+    public function respon()
+    {
+        $data = session('data_pertanyaan');
+
+        if (! $data) {
+            return redirect('/home');
+        }
+
+        return view('home-question-respon', $data);
+    }
+    
     /**
      * Display the specified resource.
      */
