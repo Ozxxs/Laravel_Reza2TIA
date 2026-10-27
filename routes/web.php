@@ -20,3 +20,13 @@ Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard'
 Route::get('/home-question-respon', [QuestionController::class, 'respon']);
 
 Route::resource('pelanggan', PelangganController::class);
+
+use App\Http\Controllers\CvController;
+
+Route::get('/cv', [CvController::class, 'index'])->name('cv.index');
+Route::get('/cv/create', [CvController::class, 'create'])->name('cv.create');
+Route::post('/cv', [CvController::class, 'store'])->name('cv.store');
+Route::get('/cv/{cv}', [CvController::class, 'show'])->name('cv.show');
+Route::get('/cv/{cv}/edit', [CvController::class, 'edit'])->name('cv.edit');
+Route::put('/cv/{cv}', [CvController::class, 'update'])->name('cv.update');
+Route::delete('/cv/{cv}', [CvController::class, 'destroy'])->name('cv.destroy');
