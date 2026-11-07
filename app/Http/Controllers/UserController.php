@@ -1,18 +1,19 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Pelanggan;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
-class PelangganController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data['dataPelanggan'] = Pelanggan::all();
-        return view('admin.pelanggan.index', $data);
+        $data['dataUser'] = User::all();
+        return view('admin.user.index', $data);
     }
 
     /**
@@ -20,7 +21,7 @@ class PelangganController extends Controller
      */
     public function create()
     {
-        return view('admin.pelanggan.create');
+        return view('admin.user.create');
     }
 
     /**
@@ -28,17 +29,24 @@ class PelangganController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
-        $data['first_name'] = $request->first_name;
-        $data['last_name']  = $request->last_name;
-        $data['birthday']   = $request->birthday;
-        $data['gender']     = $request->gender;
-        $data['email']      = $request->email;
-        $data['phone']      = $request->phone;
+        //dd($request->all());
+        $data['name'] = $request->name;
+        $data['email']  = $request->email;
+        $data['password']   = Hash::make($request->password);
+        $data['confirm_password'] = $request->password_confirmation;
+        $request->validate([
+            'name'     => 'required|string|max:100',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+        ]);
 
-        Pelanggan::create($data);
+        $data['name']     = $request->name;
+        $data['email']    = $request->email;
+        $data['password'] = Hash::make($request->password);
 
-        return redirect()->route('pelanggan.index')->with('success', 'Penambahan Data Berhasil!');
+        User::create($data);
+
+        return redirect()->route('user.index')->with('success', 'Penambahan Data Berhasil!');
     }
 
     /**
@@ -54,8 +62,8 @@ class PelangganController extends Controller
      */
     public function edit(string $id)
     {
-        $data['dataPelanggan'] = Pelanggan::findOrFail($id);
-        return view('admin.pelanggan.edit', $data);
+        $data['dataUser'] = User::findOrFail($id);
+        return view('admin.user.edit', $data);
     }
 
     /**
@@ -63,18 +71,30 @@ class PelangganController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $pelanggan_id = $id;
-        $pelanggan    = Pelanggan::findOrFail($pelanggan_id);
+        $user_id = $id;
+        $user    = User::findOrFail($user_id);
+        $user = User::findOrFail($id);
 
-        $pelanggan->first_name = $request->first_name;
-        $pelanggan->last_name  = $request->last_name;
-        $pelanggan->birthday   = $request->birthday;
-        $pelanggan->gender     = $request->gender;
-        $pelanggan->email      = $request->email;
-        $pelanggan->phone      = $request->phone;
+        $request->validate([
+            'name'     => 'required|string|max:100',
+            'email'    => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|min:8|confirmed',
+        ]);
 
-        $pelanggan->save();
-        return redirect()->route('pelanggan.index')->with('success', 'Perubahan Data Berhasil!');
+        $user->name = $request->name;
+        $user->email  = $request->email;
+        $user->password   = $request->password;
+        $user->name  = $request->name;
+        $user->email = $request->email;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+        return redirect()->route('user.index')->with('success', 'Perubahan Data Berhasil!');
+
+        return redirect()->route('user.index')->with('success', 'Perubahan Data Berhasil!');
     }
 
     /**
@@ -82,9 +102,11 @@ class PelangganController extends Controller
      */
     public function destroy(string $id)
     {
-        $pelanggan = Pelanggan::findOrFail($id);
+        $user = User::findOrFail($id);
 
-        $pelanggan->delete();
-        return redirect()->route('pelanggan.index')->with('success', 'Data berhasil dihapus');
+        $user->delete();
+
+        return redirect()->route('user.index')->with('success', 'Data berhasil dihapus');
     }
 }
+
